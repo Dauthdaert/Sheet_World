@@ -1,0 +1,64 @@
+[package]
+name = "sheet_world"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+panic = 'abort'
+codegen-units = 1
+opt-level = 3
+lto = true
+
+[features]
+default = [
+  "bevy/bevy_winit",
+  "bevy/bevy_render",
+  "bevy/bevy_core_pipeline",
+  "bevy/bevy_sprite",
+  "bevy/bevy_text",
+  "bevy/bevy_ui",
+  "bevy/bevy_asset",
+  "bevy/png",
+  "bevy/ktx2",
+  "bevy/x11",
+  "bevy/wayland",
+  "bevy/filesystem_watcher",
+  "bevy_kira_audio/wav",
+  "bevy_rapier2d/dim2",
+  "bevy_rapier2d/async-collider",
+  "bevy_rapier2d/debug-render-2d",
+  "bevy_rapier2d/simd-nightly",
+  "bevy_rapier2d/parallel",
+  "bevy_common_assets/ron",
+  "bitvec/serde",
+  "rusqlite/bundled"
+]
+
+[dependencies]
+bevy = { version = "0.10", default-features = false }
+bevy_kira_audio = { version = "0.15", default-features = false }
+bevy-inspector-egui = "0.18"
+bevy_rapier2d = { version = "0.21.0", default-features = false }
+bevy_common_assets = "0.6.0"
+bevy_asset_loader = "0.16.0"
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap.git" }
+bevy_tileset = "0.7.0"
+futures-lite = "*"
+bitvec = "1.0.1"
+noise = { git = "https://github.com/Razaekel/noise-rs.git" }
+rand = "0.8.5"
+rusqlite = "0.28.0"
+r2d2 = "0.8.10"
+r2d2_sqlite = "0.21.0"
+serde = "1.0.160"
+serde_with = "2.3.2"
+bincode = "1.3.3"
+zstd = "0.12"
