@@ -94,7 +94,7 @@ fn spawn_chunk(commands: &mut Commands, tileset: &Tileset, chunk_pos: IVec2) -> 
     let chunk_transform = Transform::from_translation(Vec3::new(
         chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * tile_size.x,
         chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * tile_size.y,
-        0.0,
+        10.0,
     ));
 
     let tileset_handle = tileset.texture();
@@ -112,7 +112,7 @@ fn spawn_chunk(commands: &mut Commands, tileset: &Tileset, chunk_pos: IVec2) -> 
                     );
 
                     // Leave empty sky
-                    if tile_pos_in_world.y < 700 {
+                    if tile_pos_in_world.y < 200 {
                         let tile = tileset.get_tile_index("Dirt").unwrap();
                         let tile_entity = builder
                             .spawn(TileBundle {

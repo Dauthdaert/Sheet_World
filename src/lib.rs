@@ -1,3 +1,4 @@
+mod background;
 mod player;
 mod states;
 mod world;
@@ -47,6 +48,7 @@ pub fn app() -> App {
 
     app.add_plugin(player::PlayerPlugin);
     app.add_plugin(world::WorldPlugin);
+    app.add_plugin(background::BackgroundPlugin);
 
     app
 }
