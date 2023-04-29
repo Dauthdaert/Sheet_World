@@ -10,7 +10,7 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(camera::spawn);
+        app.add_system(camera::spawn.in_schedule(OnEnter(GameState::InGame)));
 
         app.add_system(
             movement::movement

@@ -1,6 +1,7 @@
 mod background;
 mod player;
 mod states;
+mod ui;
 mod world;
 
 use bevy::{
@@ -48,6 +49,7 @@ pub fn app() -> App {
 
     app.add_plugin(player::PlayerPlugin);
     app.add_plugin(world::WorldPlugin);
+    app.add_plugin(ui::UIPlugin);
 
     // TODO: Put this back in once I have proper background art.
     //app.add_plugin(background::BackgroundPlugin);

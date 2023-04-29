@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 
+use super::camera::PlayerCamera;
+
 pub fn movement(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
-    mut camera_query: Query<&mut Transform, With<Camera>>,
+    mut camera_query: Query<&mut Transform, With<PlayerCamera>>,
     // mut parallax_move_writer: EventWriter<ParallaxMoveEvent>,
 ) {
     let dt = time.delta_seconds();
