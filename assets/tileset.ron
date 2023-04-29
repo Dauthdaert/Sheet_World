@@ -2,6 +2,8 @@
 	name: Some("world_tiles"),
 	id: 0,
 	tiles: {
-		0: "tiles/dirt.ron"
+		0: "tiles/air.ron",
+		1: "tiles/world_wall.ron",
+		2: "tiles/dirt.ron"
 	}
 )

@@ -44,7 +44,7 @@ pub fn app() -> App {
     app.add_state::<GameState>();
 
     app.add_loading_state(
-        LoadingState::new(GameState::AssetLoading).continue_to_state(GameState::InGame),
+        LoadingState::new(GameState::AssetLoading).continue_to_state(GameState::WorldGeneration),
     );
 
     app.add_plugin(player::PlayerPlugin);

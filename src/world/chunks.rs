@@ -2,6 +2,10 @@ use bevy::{math::Vec3Swizzles, prelude::*, utils::HashMap};
 use bevy_ecs_tilemap::prelude::*;
 use bevy_tileset::prelude::*;
 
+use crate::player::PlayerCamera;
+
+use super::storage::WorldStorage;
+
 const CHUNK_SIZE: UVec2 = UVec2 { x: 64, y: 64 };
 const I_CHUNK_SIZE: IVec2 = IVec2 {
     x: CHUNK_SIZE.x as i32,
@@ -24,17 +28,19 @@ impl LoadPoint {
 }
 
 #[derive(Resource, Debug, Clone, Default)]
-pub struct LoadedChunks {
+pub struct RenderedChunks {
     loaded: HashMap<IVec2, Entity>,
 }
 
 pub fn spawn_chunks_around_camera(
     mut commands: Commands,
     tilesets: Tilesets,
-    camera_query: Query<(&Transform, &LoadPoint), With<Camera>>,
-    mut loaded_chunks: ResMut<LoadedChunks>,
+    world_storage: Res<WorldStorage>,
+    camera_query: Query<(&Transform, &LoadPoint), With<PlayerCamera>>,
+    mut rendered_chunks: ResMut<RenderedChunks>,
 ) {
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
+
     for (transform, load_point) in camera_query.iter() {
         let camera_chunk_pos =
             camera_pos_to_chunk_pos(transform.translation.xy(), tileset.tile_size());
@@ -46,9 +52,9 @@ pub fn spawn_chunks_around_camera(
                 ..(camera_chunk_pos.x + load_point.radius as i32)
             {
                 let chunk_pos = IVec2::new(x, y);
-                if !loaded_chunks.loaded.contains_key(&chunk_pos) {
-                    let chunk = spawn_chunk(&mut commands, tileset, chunk_pos);
-                    loaded_chunks.loaded.insert(chunk_pos, chunk);
+                if !rendered_chunks.loaded.contains_key(&chunk_pos) {
+                    let chunk = spawn_chunk(&mut commands, tileset, &world_storage, chunk_pos);
+                    rendered_chunks.loaded.insert(chunk_pos, chunk);
                 }
             }
         }
@@ -58,11 +64,12 @@ pub fn spawn_chunks_around_camera(
 pub fn despawn_chunks_far_from_camera(
     mut commands: Commands,
     tilesets: Tilesets,
-    camera_query: Query<(&Transform, &LoadPoint), With<Camera>>,
+    camera_query: Query<(&Transform, &LoadPoint), With<PlayerCamera>>,
     chunks_query: Query<(Entity, &Transform), With<TileStorage>>,
-    mut loaded_chunks: ResMut<LoadedChunks>,
+    mut rendered_chunks: ResMut<RenderedChunks>,
 ) {
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
+
     for (camera_transform, load_point) in camera_query.iter() {
         for (entity, chunk_transform) in chunks_query.iter() {
             if camera_transform
@@ -73,7 +80,7 @@ pub fn despawn_chunks_far_from_camera(
             {
                 let chunk_pos =
                     camera_pos_to_chunk_pos(chunk_transform.translation.xy(), tileset.tile_size());
-                loaded_chunks.loaded.remove(&chunk_pos);
+                rendered_chunks.loaded.remove(&chunk_pos);
                 commands.entity(entity).despawn_recursive();
             }
         }
@@ -86,7 +93,12 @@ fn camera_pos_to_chunk_pos(camera_pos: Vec2, tile_size: Vec2) -> IVec2 {
     camera_pos / (I_CHUNK_SIZE * tile_size)
 }
 
-fn spawn_chunk(commands: &mut Commands, tileset: &Tileset, chunk_pos: IVec2) -> Entity {
+fn spawn_chunk(
+    commands: &mut Commands,
+    tileset: &Tileset,
+    world: &WorldStorage,
+    chunk_pos: IVec2,
+) -> Entity {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE.into());
 
@@ -106,24 +118,24 @@ fn spawn_chunk(commands: &mut Commands, tileset: &Tileset, chunk_pos: IVec2) -> 
                 for y in 0..CHUNK_SIZE.y {
                     let tile_pos = TilePos { x, y };
 
-                    let tile_pos_in_world = IVec2::new(
-                        chunk_pos.x * CHUNK_SIZE.x as i32 + tile_pos.x as i32,
-                        chunk_pos.y * CHUNK_SIZE.y as i32 + tile_pos.y as i32,
-                    );
+                    let tile_pos_x = chunk_pos.x * CHUNK_SIZE.x as i32 + tile_pos.x as i32;
+                    let tile_pos_y = chunk_pos.y * CHUNK_SIZE.y as i32 + tile_pos.y as i32;
 
-                    // Leave empty sky
-                    if tile_pos_in_world.y < 200 {
-                        let tile = tileset.get_tile_index("Dirt").unwrap();
-                        let tile_entity = builder
-                            .spawn(TileBundle {
-                                position: tile_pos,
-                                texture_index: TileTextureIndex(*tile.base_index() as u32),
-                                tilemap_id: TilemapId(builder.parent_entity()),
-                                ..default()
-                            })
-                            .id();
-                        tile_storage.set(&tile_pos, tile_entity);
-                    }
+                    let tile_index = if !world.in_bounds(tile_pos_x, tile_pos_y) {
+                        0
+                    } else {
+                        world.get_tile(tile_pos_x, tile_pos_y)
+                    };
+
+                    let tile_entity = builder
+                        .spawn(TileBundle {
+                            position: tile_pos,
+                            texture_index: TileTextureIndex(tile_index),
+                            tilemap_id: TilemapId(builder.parent_entity()),
+                            ..default()
+                        })
+                        .id();
+                    tile_storage.set(&tile_pos, tile_entity);
                 }
             }
         })

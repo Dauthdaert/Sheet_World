@@ -1,6 +1,8 @@
 mod camera;
 mod movement;
 
+pub use camera::PlayerCamera;
+
 use bevy::prelude::*;
 use bevy_parallax::ParallaxSystems;
 

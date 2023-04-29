@@ -1,5 +1,9 @@
 mod chunks;
+mod generation;
+mod storage;
+
 pub use chunks::LoadPoint;
+pub use storage::WorldStorage;
 
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -24,11 +28,12 @@ impl Plugin for WorldPlugin {
             ..default()
         })
         .add_plugin(bevy_ecs_tilemap::TilemapPlugin);
+
         app.add_plugin(bevy_tileset::prelude::TilesetPlugin::default());
 
         app.add_collection_to_loading_state::<_, TileTextures>(GameState::AssetLoading);
 
-        app.init_resource::<chunks::LoadedChunks>();
+        app.init_resource::<chunks::RenderedChunks>();
         app.add_systems(
             (
                 chunks::despawn_chunks_far_from_camera,
@@ -36,5 +41,7 @@ impl Plugin for WorldPlugin {
             )
                 .in_set(OnUpdate(GameState::InGame)),
         );
+
+        app.add_plugin(generation::WorldGenerationPlugin);
     }
 }

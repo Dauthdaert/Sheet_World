@@ -1,0 +1,4 @@
+(
+	name: "WorldWall",
+	tile: Standard("tiles/world_wall.png")
+)
