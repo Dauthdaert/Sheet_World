@@ -1,5 +1,6 @@
 mod basic_heightmap;
 mod dig_caves;
+mod dig_tunnels;
 mod set_grass_layer;
 mod set_spawn_point;
 mod set_stone_areas;
@@ -33,6 +34,7 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
 
     // Dig features into terrain
     dig_caves::execute(&mut rng, &mut world);
+    dig_tunnels::execute(&mut rng, &mut world);
 
     // Set necessary world features
     set_world_wall::execute(&mut world, &tileset);
