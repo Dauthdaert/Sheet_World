@@ -23,11 +23,15 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
     let mut world = WorldStorage::from_dimensions(4200, 1200);
 
-    basic_heightmap::execute(&mut world, &tileset);
-    set_world_wall::execute(&mut world, &tileset);
-    set_grass_layer::execute(&mut world, &tileset);
-    set_stone_areas::execute(&mut world, &tileset);
+    let mut rng = rand::thread_rng();
 
+    // Set initial terrain tiles
+    basic_heightmap::execute(&mut rng, &mut world, &tileset);
+    set_grass_layer::execute(&mut world, &tileset);
+    set_stone_areas::execute(&mut rng, &mut world, &tileset);
+
+    // Set necessary world features
+    set_world_wall::execute(&mut world, &tileset);
     set_spawn_point::execute(&mut world);
 
     commands.insert_resource(world);
