@@ -13,12 +13,15 @@ use bevy_tileset::prelude::Tileset;
 use crate::states::GameState;
 
 pub const MIN_TILE_ID: u32 = 1;
+pub const MIN_WALL_ID: u32 = 0;
 
 #[allow(dead_code)]
 #[derive(AssetCollection, Resource)]
 pub struct TileTextures {
-    #[asset(path = "tileset.ron")]
+    #[asset(path = "world_tiles.ron")]
     tileset: Handle<Tileset>,
+    #[asset(path = "world_walls.ron")]
+    wallset: Handle<Tileset>,
 }
 
 pub struct WorldPlugin;

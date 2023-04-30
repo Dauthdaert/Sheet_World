@@ -3,6 +3,7 @@ use bevy::prelude::*;
 #[derive(Resource)]
 pub struct WorldStorage {
     tiles: Vec<u32>,
+    walls: Vec<u32>,
     width: usize,
     height: usize,
     spawn_point: usize,
@@ -13,6 +14,7 @@ impl WorldStorage {
     pub fn from_dimensions(width: usize, height: usize) -> Self {
         Self {
             tiles: vec![0; width * height],
+            walls: vec![0; width * height],
             width,
             height,
             spawn_point: 0,
@@ -76,5 +78,29 @@ impl WorldStorage {
     #[inline]
     pub fn set_tile_idx(&mut self, idx: usize, tile: u32) {
         self.tiles[idx] = tile;
+    }
+
+    #[inline]
+    pub fn get_wall(&self, x: i32, y: i32) -> u32 {
+        assert!(x >= 0 && y >= 0);
+
+        self.get_wall_idx(self.linearize(x as usize, y as usize))
+    }
+
+    #[inline]
+    pub fn get_wall_idx(&self, idx: usize) -> u32 {
+        self.walls[idx]
+    }
+
+    #[inline]
+    pub fn set_wall(&mut self, x: i32, y: i32, tile: u32) {
+        assert!(x >= 0 && y >= 0);
+
+        self.set_wall_idx(self.linearize(x as usize, y as usize), tile);
+    }
+
+    #[inline]
+    pub fn set_wall_idx(&mut self, idx: usize, wall: u32) {
+        self.walls[idx] = wall;
     }
 }

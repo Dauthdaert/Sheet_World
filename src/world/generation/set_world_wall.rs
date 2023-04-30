@@ -3,7 +3,7 @@ use bevy_tileset::prelude::Tileset;
 use crate::world::WorldStorage;
 
 pub fn execute(world: &mut WorldStorage, tileset: &Tileset) {
-    let tile = tileset.get_tile_index("WorldWall").unwrap();
+    let tile = tileset.get_tile_index("WorldBorder").unwrap();
 
     for y in 0..world.get_height() {
         for x in 0..world.get_width() {

@@ -4,10 +4,16 @@ use rand::{rngs::ThreadRng, RngCore};
 
 use crate::world::{WorldStorage, MIN_TILE_ID};
 
-pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage, tileset: &Tileset) {
+pub fn execute(
+    rng: &mut ThreadRng,
+    world: &mut WorldStorage,
+    tileset: &Tileset,
+    wallset: &Tileset,
+) {
     let stone_map = Perlin::new(rng.next_u32());
 
     let tile_index = tileset.get_tile_index("Stone").unwrap();
+    let wall_index = wallset.get_tile_index("Stone").unwrap();
     for y in 0..world.get_height() {
         for x in 0..world.get_width() {
             let x_noise = x as f64 / 50.0;
@@ -18,6 +24,7 @@ pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage, tileset: &Tileset)
             let idx = world.linearize(x, y);
             if stone_val > stone_limit && world.get_tile_idx(idx) > MIN_TILE_ID {
                 world.set_tile_idx(idx, *tile_index.base_index() as u32);
+                world.set_wall_idx(idx, *wall_index.base_index() as u32);
             }
         }
     }

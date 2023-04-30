@@ -23,14 +23,15 @@ impl Plugin for WorldGenerationPlugin {
 
 fn generate(mut commands: Commands, tilesets: Tilesets) {
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
+    let wallset = tilesets.get_by_name("world_walls").unwrap();
     let mut world = WorldStorage::from_dimensions(4200, 1200);
 
     let mut rng = rand::thread_rng();
 
     // Set initial terrain tiles
-    basic_heightmap::execute(&mut rng, &mut world, &tileset);
+    basic_heightmap::execute(&mut rng, &mut world, &tileset, &wallset);
     set_grass_layer::execute(&mut world, &tileset);
-    set_stone_areas::execute(&mut rng, &mut world, &tileset);
+    set_stone_areas::execute(&mut rng, &mut world, &tileset, &wallset);
 
     // Dig features into terrain
     dig_caves::execute(&mut rng, &mut world);

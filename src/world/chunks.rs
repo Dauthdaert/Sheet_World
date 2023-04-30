@@ -29,7 +29,7 @@ impl LoadPoint {
 
 #[derive(Resource, Debug, Clone, Default)]
 pub struct RenderedChunks {
-    loaded: HashMap<IVec2, Entity>,
+    loaded: HashMap<IVec2, [Entity; 2]>,
 }
 
 pub fn spawn_chunks_around_camera(
@@ -40,6 +40,7 @@ pub fn spawn_chunks_around_camera(
     mut rendered_chunks: ResMut<RenderedChunks>,
 ) {
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
+    let wallset = tilesets.get_by_name("world_walls").unwrap();
 
     for (transform, load_point) in camera_query.iter() {
         let camera_chunk_pos =
@@ -53,8 +54,23 @@ pub fn spawn_chunks_around_camera(
             {
                 let chunk_pos = IVec2::new(x, y);
                 if !rendered_chunks.loaded.contains_key(&chunk_pos) {
-                    let chunk = spawn_chunk(&mut commands, tileset, &world_storage, chunk_pos);
-                    rendered_chunks.loaded.insert(chunk_pos, chunk);
+                    let walls = spawn_chunk(
+                        &mut commands,
+                        |x, y| world_storage.in_bounds(x, y),
+                        |x, y| world_storage.get_wall(x, y),
+                        wallset,
+                        chunk_pos,
+                        10.0,
+                    );
+                    let tiles = spawn_chunk(
+                        &mut commands,
+                        |x, y| world_storage.in_bounds(x, y),
+                        |x, y| world_storage.get_tile(x, y),
+                        tileset,
+                        chunk_pos,
+                        11.0,
+                    );
+                    rendered_chunks.loaded.insert(chunk_pos, [walls, tiles]);
                 }
             }
         }
@@ -80,6 +96,8 @@ pub fn despawn_chunks_far_from_camera(
             {
                 let chunk_pos =
                     camera_pos_to_chunk_pos(chunk_transform.translation.xy(), tileset.tile_size());
+                // FIXME: This could get weird if only one of Walls/Tiles gets despawned at the
+                // same time.
                 rendered_chunks.loaded.remove(&chunk_pos);
                 commands.entity(entity).despawn_recursive();
             }
@@ -93,12 +111,18 @@ fn camera_pos_to_chunk_pos(camera_pos: Vec2, tile_size: Vec2) -> IVec2 {
     camera_pos / (I_CHUNK_SIZE * tile_size)
 }
 
-fn spawn_chunk(
+fn spawn_chunk<F, V>(
     commands: &mut Commands,
+    in_bounds: F,
+    get_content: V,
     tileset: &Tileset,
-    world: &WorldStorage,
     chunk_pos: IVec2,
-) -> Entity {
+    chunk_z: f32,
+) -> Entity
+where
+    F: Fn(i32, i32) -> bool,
+    V: Fn(i32, i32) -> u32,
+{
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE.into());
 
@@ -106,7 +130,7 @@ fn spawn_chunk(
     let chunk_transform = Transform::from_translation(Vec3::new(
         chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * tile_size.x,
         chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * tile_size.y,
-        10.0,
+        chunk_z,
     ));
 
     let tileset_handle = tileset.texture();
@@ -121,10 +145,10 @@ fn spawn_chunk(
                     let tile_pos_x = chunk_pos.x * CHUNK_SIZE.x as i32 + tile_pos.x as i32;
                     let tile_pos_y = chunk_pos.y * CHUNK_SIZE.y as i32 + tile_pos.y as i32;
 
-                    let tile_index = if !world.in_bounds(tile_pos_x, tile_pos_y) {
+                    let tile_index = if !in_bounds(tile_pos_x, tile_pos_y) {
                         0
                     } else {
-                        world.get_tile(tile_pos_x, tile_pos_y)
+                        get_content(tile_pos_x, tile_pos_y)
                     };
 
                     let tile_entity = builder
