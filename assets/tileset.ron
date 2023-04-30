@@ -5,6 +5,7 @@
 		0: "tiles/air.ron",
 		1: "tiles/world_wall.ron",
 		2: "tiles/dirt.ron",
-		3: "tiles/grass.ron"
+		3: "tiles/grass.ron",
+		4: "tiles/stone.ron"
 	}
 )

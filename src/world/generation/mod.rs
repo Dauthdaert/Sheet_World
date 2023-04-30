@@ -1,6 +1,7 @@
 mod basic_heightmap;
 mod set_grass_layer;
 mod set_spawn_point;
+mod set_stone_areas;
 mod set_world_wall;
 
 use bevy::prelude::*;
@@ -25,6 +26,7 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
     basic_heightmap::execute(&mut world, &tileset);
     set_world_wall::execute(&mut world, &tileset);
     set_grass_layer::execute(&mut world, &tileset);
+    set_stone_areas::execute(&mut world, &tileset);
 
     set_spawn_point::execute(&mut world);
 
