@@ -10,11 +10,11 @@ pub fn execute(world: &mut WorldStorage, tileset: &Tileset) {
         .map(|x| base_terrain_height + (heightmap.get([x as f64 / 200.0]) * 40.0) as i32)
         .collect();
 
+    let tile_index = tileset.get_tile_index("Dirt").unwrap();
     for y in 0..world.get_height() {
         for x in 0..world.get_width() {
             let mut tile = 0;
             if y <= terrain_height[x] as usize {
-                let tile_index = tileset.get_tile_index("Dirt").unwrap();
                 tile = *tile_index.base_index() as u32;
             }
 

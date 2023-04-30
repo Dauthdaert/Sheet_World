@@ -12,6 +12,8 @@ use bevy_tileset::prelude::Tileset;
 
 use crate::states::GameState;
 
+pub const MIN_TILE_ID: u32 = 1;
+
 #[allow(dead_code)]
 #[derive(AssetCollection, Resource)]
 pub struct TileTextures {
