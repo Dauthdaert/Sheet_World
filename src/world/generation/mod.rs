@@ -1,4 +1,5 @@
 mod basic_heightmap;
+mod dig_caves;
 mod set_grass_layer;
 mod set_spawn_point;
 mod set_stone_areas;
@@ -29,6 +30,9 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
     basic_heightmap::execute(&mut rng, &mut world, &tileset);
     set_grass_layer::execute(&mut world, &tileset);
     set_stone_areas::execute(&mut rng, &mut world, &tileset);
+
+    // Dig features into terrain
+    dig_caves::execute(&mut rng, &mut world);
 
     // Set necessary world features
     set_world_wall::execute(&mut world, &tileset);
