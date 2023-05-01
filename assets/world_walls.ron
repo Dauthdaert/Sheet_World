@@ -3,7 +3,7 @@
 	id: 1,
 	tiles: {
 		0: "walls/air.ron",
-		1: "walls/dirt.ron",
+		1: "walls/dirt_natural.ron",
 		2: "walls/stone.ron"
 	}
 )

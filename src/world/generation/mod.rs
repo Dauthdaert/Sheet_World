@@ -31,7 +31,7 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
     // Set initial terrain tiles
     basic_heightmap::execute(&mut rng, &mut world, &tileset, &wallset);
     set_grass_layer::execute(&mut world, &tileset);
-    set_stone_areas::execute(&mut rng, &mut world, &tileset, &wallset);
+    set_stone_areas::execute(&mut rng, &mut world, &tileset);
 
     // Dig features into terrain
     dig_caves::execute(&mut rng, &mut world);

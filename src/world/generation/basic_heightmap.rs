@@ -17,7 +17,7 @@ pub fn execute(
         .collect();
 
     let tile_index = tileset.get_tile_index("Dirt").unwrap();
-    let wall_index = wallset.get_tile_index("Dirt").unwrap();
+    let wall_index = wallset.get_tile_index("DirtNatural").unwrap();
     for y in 0..world.get_height() {
         for x in 0..world.get_width() {
             let mut tile = 0;
