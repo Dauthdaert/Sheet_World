@@ -1,10 +1,10 @@
-use noise::{NoiseFn, Perlin};
+use noise::{Fbm, NoiseFn, Perlin};
 use rand::{rngs::ThreadRng, RngCore};
 
 use crate::world::WorldStorage;
 
 pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage) {
-    let cave_map = Perlin::new(rng.next_u32());
+    let cave_map = Fbm::<Perlin>::new(rng.next_u32());
 
     for y in 0..world.get_height() {
         for x in 0..world.get_width() {

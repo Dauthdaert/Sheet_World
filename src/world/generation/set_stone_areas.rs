@@ -1,11 +1,11 @@
 use bevy_tileset::prelude::Tileset;
-use noise::{NoiseFn, Perlin};
+use noise::{Fbm, NoiseFn, Perlin};
 use rand::{rngs::ThreadRng, RngCore};
 
 use crate::world::{WorldStorage, MIN_TILE_ID};
 
 pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage, tileset: &Tileset) {
-    let stone_map = Perlin::new(rng.next_u32());
+    let stone_map = Fbm::<Perlin>::new(rng.next_u32());
 
     let tile_index = tileset.get_tile_index("Stone").unwrap();
     for y in 0..world.get_height() {
