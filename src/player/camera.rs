@@ -17,8 +17,8 @@ pub fn spawn(mut commands: Commands, tilesets: Tilesets, world: Res<WorldStorage
     let tileset = tilesets.get_by_name("world_tiles").unwrap();
     let tile_size = tileset.tile_size();
     let spawn_point = world.get_spawn_point();
-    camera_bundle.transform.translation.x = spawn_point.x as f32 * tile_size.x;
-    camera_bundle.transform.translation.y = spawn_point.y as f32 * tile_size.y;
+    camera_bundle.transform.translation.x = spawn_point.x() as f32 * tile_size.x;
+    camera_bundle.transform.translation.y = spawn_point.y() as f32 * tile_size.y;
 
     commands.spawn((
         camera_bundle,

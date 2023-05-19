@@ -1,42 +1,44 @@
 use bevy::prelude::*;
 
+use super::world_pos::WorldTilePos;
+
 #[derive(Resource)]
 pub struct WorldStorage {
     tiles: Vec<u32>,
     walls: Vec<u32>,
-    width: usize,
-    height: usize,
-    spawn_point: usize,
+    width: u32,
+    height: u32,
+    spawn_point_idx: usize,
 }
 
 #[allow(dead_code)]
 impl WorldStorage {
-    pub fn from_dimensions(width: usize, height: usize) -> Self {
+    pub fn from_dimensions(width: u32, height: u32) -> Self {
         Self {
-            tiles: vec![0; width * height],
-            walls: vec![0; width * height],
+            tiles: vec![0; (width * height) as usize],
+            walls: vec![0; (width * height) as usize],
             width,
             height,
-            spawn_point: 0,
+            spawn_point_idx: 0,
         }
     }
 
     #[inline]
-    pub fn get_height(&self) -> usize {
+    pub fn get_height(&self) -> u32 {
         self.height
     }
 
     #[inline]
-    pub fn get_width(&self) -> usize {
+    pub fn get_width(&self) -> u32 {
         self.width
     }
 
-    pub fn get_spawn_point(&self) -> UVec2 {
-        self.delinearize(self.spawn_point)
+    pub fn get_spawn_point(&self) -> WorldTilePos {
+        self.delinearize(self.spawn_point_idx)
     }
 
-    pub fn set_spawn_point(&mut self, x: u32, y: u32) {
-        self.spawn_point = self.linearize(x as usize, y as usize);
+    pub fn set_spawn_point(&mut self, tile_pos: WorldTilePos) {
+        self.spawn_point_idx = self.linearize(tile_pos);
     }
 
     #[inline]
@@ -45,22 +47,20 @@ impl WorldStorage {
     }
 
     #[inline]
-    pub fn linearize(&self, x: usize, y: usize) -> usize {
-        x + self.width * y
+    pub fn linearize(&self, tile_pos: WorldTilePos) -> usize {
+        (tile_pos.x() + self.width * tile_pos.y()) as usize
     }
 
     #[inline]
-    pub fn delinearize(&self, idx: usize) -> UVec2 {
-        let x = idx % self.width;
-        let y = idx / self.width;
-        UVec2::new(x as u32, y as u32)
+    pub fn delinearize(&self, idx: usize) -> WorldTilePos {
+        let x = idx as u32 % self.width;
+        let y = idx as u32 / self.width;
+        WorldTilePos::new(x, y)
     }
 
     #[inline]
-    pub fn get_tile(&self, x: i32, y: i32) -> u32 {
-        assert!(x >= 0 && y >= 0);
-
-        self.get_tile_idx(self.linearize(x as usize, y as usize))
+    pub fn get_tile(&self, pos: WorldTilePos) -> u32 {
+        self.get_tile_idx(self.linearize(pos))
     }
 
     #[inline]
@@ -69,10 +69,8 @@ impl WorldStorage {
     }
 
     #[inline]
-    pub fn set_tile(&mut self, x: i32, y: i32, tile: u32) {
-        assert!(x >= 0 && y >= 0);
-
-        self.set_tile_idx(self.linearize(x as usize, y as usize), tile);
+    pub fn set_tile(&mut self, pos: WorldTilePos, tile: u32) {
+        self.set_tile_idx(self.linearize(pos), tile);
     }
 
     #[inline]
@@ -81,10 +79,8 @@ impl WorldStorage {
     }
 
     #[inline]
-    pub fn get_wall(&self, x: i32, y: i32) -> u32 {
-        assert!(x >= 0 && y >= 0);
-
-        self.get_wall_idx(self.linearize(x as usize, y as usize))
+    pub fn get_wall(&self, pos: WorldTilePos) -> u32 {
+        self.get_wall_idx(self.linearize(pos))
     }
 
     #[inline]
@@ -93,10 +89,8 @@ impl WorldStorage {
     }
 
     #[inline]
-    pub fn set_wall(&mut self, x: i32, y: i32, tile: u32) {
-        assert!(x >= 0 && y >= 0);
-
-        self.set_wall_idx(self.linearize(x as usize, y as usize), tile);
+    pub fn set_wall(&mut self, pos: WorldTilePos, tile: u32) {
+        self.set_wall_idx(self.linearize(pos), tile);
     }
 
     #[inline]

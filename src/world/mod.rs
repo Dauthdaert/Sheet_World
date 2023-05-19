@@ -1,9 +1,11 @@
 mod chunks;
 mod generation;
 mod storage;
+mod world_pos;
 
-pub use chunks::LoadPoint;
+pub use chunks::{LoadPoint, RenderedChunks};
 pub use storage::WorldStorage;
+pub use world_pos::WorldTilePos;
 
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -12,8 +14,8 @@ use bevy_tileset::prelude::Tileset;
 
 use crate::states::GameState;
 
-pub const MIN_TILE_ID: u32 = 1;
-pub const MIN_WALL_ID: u32 = 0;
+pub const MIN_TILE_ID: u32 = 2;
+pub const MIN_WALL_ID: u32 = 1;
 
 #[allow(dead_code)]
 #[derive(AssetCollection, Resource)]

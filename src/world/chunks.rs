@@ -4,7 +4,7 @@ use bevy_tileset::prelude::*;
 
 use crate::player::PlayerCamera;
 
-use super::storage::WorldStorage;
+use super::{storage::WorldStorage, world_pos::WorldTilePos};
 
 const CHUNK_SIZE: UVec2 = UVec2 { x: 64, y: 64 };
 const I_CHUNK_SIZE: IVec2 = IVec2 {
@@ -57,7 +57,7 @@ pub fn spawn_chunks_around_camera(
                     let walls = spawn_chunk(
                         &mut commands,
                         |x, y| world_storage.in_bounds(x, y),
-                        |x, y| world_storage.get_wall(x, y),
+                        |x, y| world_storage.get_wall(WorldTilePos::new(x, y)),
                         wallset,
                         chunk_pos,
                         10.0,
@@ -65,7 +65,7 @@ pub fn spawn_chunks_around_camera(
                     let tiles = spawn_chunk(
                         &mut commands,
                         |x, y| world_storage.in_bounds(x, y),
-                        |x, y| world_storage.get_tile(x, y),
+                        |x, y| world_storage.get_tile(WorldTilePos::new(x, y)),
                         tileset,
                         chunk_pos,
                         11.0,
@@ -121,15 +121,15 @@ fn spawn_chunk<F, V>(
 ) -> Entity
 where
     F: Fn(i32, i32) -> bool,
-    V: Fn(i32, i32) -> u32,
+    V: Fn(u32, u32) -> u32,
 {
     let tilemap_entity = commands.spawn_empty().id();
     let mut tile_storage = TileStorage::empty(CHUNK_SIZE.into());
 
     let tile_size = tileset.tile_size();
     let chunk_transform = Transform::from_translation(Vec3::new(
-        chunk_pos.x as f32 * CHUNK_SIZE.x as f32 * tile_size.x,
-        chunk_pos.y as f32 * CHUNK_SIZE.y as f32 * tile_size.y,
+        (chunk_pos.x as f32 * CHUNK_SIZE.x as f32 + 0.5) * tile_size.x,
+        (chunk_pos.y as f32 * CHUNK_SIZE.y as f32 + 0.5) * tile_size.y,
         chunk_z,
     ));
 
@@ -148,7 +148,7 @@ where
                     let tile_index = if !in_bounds(tile_pos_x, tile_pos_y) {
                         0
                     } else {
-                        get_content(tile_pos_x, tile_pos_y)
+                        get_content(tile_pos_x as u32, tile_pos_y as u32)
                     };
 
                     let tile_entity = builder

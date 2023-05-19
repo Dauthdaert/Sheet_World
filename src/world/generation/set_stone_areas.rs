@@ -2,7 +2,7 @@ use bevy_tileset::prelude::Tileset;
 use noise::{Fbm, NoiseFn, Perlin};
 use rand::{rngs::ThreadRng, RngCore};
 
-use crate::world::{WorldStorage, MIN_TILE_ID};
+use crate::world::{world_pos::WorldTilePos, WorldStorage, MIN_TILE_ID};
 
 pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage, tileset: &Tileset) {
     let stone_map = Fbm::<Perlin>::new(rng.next_u32());
@@ -15,8 +15,8 @@ pub fn execute(rng: &mut ThreadRng, world: &mut WorldStorage, tileset: &Tileset)
             let stone_val = (stone_map.get([x_noise, y_noise]) + 1.0) * 50000.0;
             let stone_limit = (y / 6 * y) as f64;
 
-            let idx = world.linearize(x, y);
-            if stone_val > stone_limit && world.get_tile_idx(idx) > MIN_TILE_ID {
+            let idx = world.linearize(WorldTilePos::new(x, y));
+            if stone_val > stone_limit && world.get_tile_idx(idx) >= MIN_TILE_ID {
                 world.set_tile_idx(idx, *tile_index.base_index() as u32);
             }
         }
