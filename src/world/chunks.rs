@@ -32,6 +32,37 @@ pub struct RenderedChunks {
     loaded: HashMap<IVec2, [Entity; 2]>,
 }
 
+#[allow(dead_code)]
+impl RenderedChunks {
+    pub fn get_wall_chunk(&self, world_pos: WorldTilePos) -> (Entity, TilePos) {
+        (
+            self.get_wall_chunk_from_chunk_pos(IVec2::new(
+                world_pos.x() as i32 / I_CHUNK_SIZE.x,
+                world_pos.y() as i32 / I_CHUNK_SIZE.y,
+            )),
+            TilePos::new(world_pos.x() % CHUNK_SIZE.x, world_pos.y() % CHUNK_SIZE.y),
+        )
+    }
+
+    fn get_wall_chunk_from_chunk_pos(&self, chunk_pos: IVec2) -> Entity {
+        self.loaded.get(&chunk_pos).unwrap()[0]
+    }
+
+    pub fn get_tile_chunk(&self, world_pos: WorldTilePos) -> (Entity, TilePos) {
+        (
+            self.get_tile_chunk_from_chunk_pos(IVec2::new(
+                world_pos.x() as i32 / I_CHUNK_SIZE.x,
+                world_pos.y() as i32 / I_CHUNK_SIZE.y,
+            )),
+            TilePos::new(world_pos.x() % CHUNK_SIZE.x, world_pos.y() % CHUNK_SIZE.y),
+        )
+    }
+
+    fn get_tile_chunk_from_chunk_pos(&self, chunk_pos: IVec2) -> Entity {
+        self.loaded.get(&chunk_pos).unwrap()[1]
+    }
+}
+
 pub fn spawn_chunks_around_camera(
     mut commands: Commands,
     tilesets: Tilesets,

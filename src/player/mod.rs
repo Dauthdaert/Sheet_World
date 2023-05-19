@@ -1,4 +1,5 @@
 mod camera;
+mod mining;
 mod movement;
 
 pub use camera::PlayerCamera;
@@ -18,6 +19,7 @@ impl Plugin for PlayerPlugin {
             movement::movement
                 .in_set(OnUpdate(GameState::InGame))
                 .before(ParallaxSystems),
-        );
+        )
+        .add_system(mining::mine.in_set(OnUpdate(GameState::InGame)));
     }
 }
