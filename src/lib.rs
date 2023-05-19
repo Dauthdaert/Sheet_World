@@ -37,7 +37,7 @@ pub fn app() -> App {
             WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::F3)),
         );
 
-        app.add_plugin(FrameTimeDiagnosticsPlugin::default())
+        app.add_plugin(FrameTimeDiagnosticsPlugin)
             .add_plugin(LogDiagnosticsPlugin::default());
     }
 

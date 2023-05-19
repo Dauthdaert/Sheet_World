@@ -29,18 +29,18 @@ fn generate(mut commands: Commands, tilesets: Tilesets) {
     let mut rng = rand::thread_rng();
 
     // Set initial terrain tiles
-    basic_heightmap::execute(&mut rng, &mut world, &tileset, &wallset);
-    set_stone_areas::execute(&mut rng, &mut world, &tileset);
+    basic_heightmap::execute(&mut rng, &mut world, tileset, wallset);
+    set_stone_areas::execute(&mut rng, &mut world, tileset);
 
     // Dig features into terrain
     dig_caves::execute(&mut rng, &mut world);
     dig_tunnels::execute(&mut rng, &mut world);
 
     // Set grass once final terrain is set
-    set_grass_layer::execute(&mut world, &tileset);
+    set_grass_layer::execute(&mut world, tileset);
 
     // Set necessary world features
-    set_world_wall::execute(&mut world, &tileset);
+    set_world_wall::execute(&mut world, tileset);
     set_spawn_point::execute(&mut world);
 
     commands.insert_resource(world);

@@ -20,7 +20,6 @@ fn spawn_ui_camera(mut commands: Commands) {
             },
             camera_2d: Camera2d {
                 clear_color: ClearColorConfig::None,
-                ..default()
             },
             ..default()
         },
