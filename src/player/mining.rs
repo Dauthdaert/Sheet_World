@@ -21,7 +21,6 @@ pub fn mine(
     let Some(cursor_pos) = window.cursor_position() else { return; };
     let (camera, camera_global_transform) = camera_query.single();
 
-    // FIXME: Currently has trouble finding the correct tile to select based on cursor position.
     if mouse_input.just_pressed(MouseButton::Left) {
         let Some(world_cursor_pos) = camera.viewport_to_world_2d(camera_global_transform, cursor_pos) else { return; };
         if world_cursor_pos.x < 0.0 || world_cursor_pos.y < 0.0 {
